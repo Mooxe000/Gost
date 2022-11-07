@@ -1,0 +1,171 @@
+version: '3'
+
+includes:
+  locale:
+    taskfile: ./tasks/locale.yml
+    internal: true
+  remote:
+    taskfile: ./tasks/remote.yml
+    internal: true
+
+tasks:
+
+  default:
+    cmds:
+      - echo 'Hello World from Task!'
+    silent: true
+
+  server_locale:
+    cmds:
+      - task: locale:server
+
+  server_remote:
+    cmds:
+      - task: remote:server
+
+  client_locale:
+    env:
+      runner: ./bin/gost
+    deps:
+      - task: locale:client
+
+  client_remote:
+    cmds:
+      - task: remote:client
+
+  close_remote:
+    cmds:
+      - task: remote:close
+
+  curltest:
+    cmds:
+      - task: locale:curltest
+        vars:
+          ip_host: cip.cc
+      - task: locale:curltest
+        vars:
+          ip_host: ipinfo.io
+
+  task_bin:
+    cmds:
+      - rm -rf ./Task
+      - mkdir -p ./Task ./bin
+      - cd Task
+        ; axel https://download.fastgit.org/go-task/task/releases/download/v3.17.0/task_linux_amd64.tar.gz
+        ; tar xvf task_linux_amd64.tar.gz
+      - mv ./Task/task ./bin
+      - rm -rf ./Task
+
+  gost_bin:
+    cmds:
+      - rm -rf ./Gost
+      - mkdir -p ./Gost ./bin
+      - cd Gost
+        ; axel https://download.fastgit.org/go-gost/gost/releases/download/v3.0.0-beta.6/gost-linux-amd64-3.0.0-beta.6.gz
+        ; gzip -d gost-linux-amd64-3.0.0-beta.6.gz
+        ; mv gost* gost
+        ; chomd +x gost
+      - mv ./Gost/gost ./bin
+      - rm -rf ./Gost
+
+  clean_bin:
+    cmds:
+      - rm -rf ./Gost
+      - rm -rf ./Task
+
+  build_base:
+    cmds:
+      - '
+        {{.runcmd}} build
+          --no-cache
+          -t mooxe/gogost
+          -f DF_base.dockerfile
+        '
+
+  build_server:
+    cmds:
+      - '
+        {{.runcmd}} build
+          --no-cache
+          -t mooxe/gogost_server
+          -f DF_server.dockerfile
+        '
+
+  build_client:
+    cmds:
+      - '
+        {{.runcmd}} build
+          -t mooxe/gogost_client
+          -f DF_client.dockerfile
+        '
+
+  img_push_server:
+    cmds:
+      - '{{.runcmd}} push mooxe/gogost_server'
+
+  img_push_client:
+    cmds:
+      - '{{.runcmd}} push mooxe/gogost_client'
+
+  img_run_server:
+    vars:
+      ins_name: gost_server
+    cmds:
+      - '
+        {{.runcmd}} run {{.runner_option}}
+          --name {{.ins_name}}
+          -e user={{.user}}
+          -e pswd={{.pswd}}
+          -e kcp_port={{.kcp_port}}
+          -e tcp_port={{.tcp_port}}
+          -p {{.kcp_port}}:{{.kcp_port}}/udp
+          -p {{.tcp_port}}:{{.tcp_port}}
+          mooxe/gogost_server
+        '
+
+  img_run_client:
+    vars:
+      ins_name: gost_client
+      locale_ip:
+        sh:
+          if [[ ! -z $remote_host ]]
+          ; then
+            echo $remote_host
+          ; else
+            ip a
+            | grep 'inet '
+            | grep -v ' lo'
+            | grep -v ' docker'
+            | awk '{print $2}'
+            | sed -e 's/\/24//'
+          ; fi
+    cmds:
+      - '
+        {{.runcmd}} run {{.runner_option}}
+          --name {{.ins_name}}
+          -e user={{.user}}
+          -e pswd={{.pswd}}
+          -e kcp_port={{.kcp_port}}
+          -e tcp_port={{.tcp_port}}
+          -e remote_host={{.locale_ip}}
+          -e proxy_port={{.proxy_port}}
+          -p {{.proxy_port}}:{{.proxy_port}}
+          mooxe/gogost_client
+        '
+
+  close_img:
+    cmds:
+      - task: close_remote
+
+  run-dev:
+    cmds:
+      - '
+        {{.runcmd}} run
+          --rm -ti
+          --name gogost
+          -v $(pwd):/root/Gost
+          -p {{.kcp_port}}:{{.kcp_port}}/udp
+          -p {{.tcp_port}}:{{.tcp_port}}
+          mooxe/gogost
+          sh
+        '

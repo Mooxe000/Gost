@@ -1,0 +1,34 @@
+version: '3'
+
+includes:
+  common: ./common.yml
+  config: ./conf.vars.yml
+
+tasks:
+
+  default:
+    cmds:
+      - echo 'Hello World from Task!'
+    silent: true
+
+  server:
+    cmds:
+      - task: common:server
+
+  client_unkcp:
+    cmds:
+      - task: common:client_unkcp
+
+  client_proxy:
+    cmds:
+      - task: common:client_proxy
+
+  client:
+    deps:
+      - client_unkcp
+      - client_proxy
+
+  curltest:
+    cmds:
+      - curl --proxy http://127.0.0.1:{{.proxy_port}} {{.ip_host}}
+      - curl --proxy socks5://127.0.0.1:{{.proxy_port}} {{.ip_host}}

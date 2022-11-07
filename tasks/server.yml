@@ -1,0 +1,27 @@
+version: '3'
+
+tasks:
+
+  default:
+    cmds:
+      - echo 'Hello World from Task!'
+    silent: true
+
+  fw_conf_febore:
+    cmd:
+      - dpkg --configure -a --force-confnew
+      - DEBIAN_FRONTEND=noninteractive apt install -y iptables-persistent
+      - systemctl daemon-reload
+
+  fw_conf:
+    cmd:
+      - iptables -A INPUT -p tcp
+          --dport {{.remote_tcp}} -j ACCEPT
+      - iptables -A INPUT -p tcp
+          --dport {{.remote_kcp}} -j ACCEPT
+      - iptables -A INPUT -p udp
+          --dport {{.remote_kcp}} -j ACCEPT
+
+      - iptables-save
+      - netfilter-persistent save
+

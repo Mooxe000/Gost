@@ -1,0 +1,90 @@
+version: '3'
+
+vars:
+
+  kcp_port:
+    sh:
+      if [[ ! -z $kcp_port ]]
+      ; then
+        echo $kcp_port
+      ; else
+        echo 10808
+      ; fi
+  tcp_port:
+    sh:
+      if [[ ! -z $tcp_port ]]
+      ; then
+        echo $tcp_port
+      ; else
+        echo 10818
+      ; fi
+
+  midforward_port:
+    sh:
+      if [[ ! -z $midforward_port ]]
+      ; then
+        echo $midforward_port
+      ; else
+        echo 9555
+      ; fi
+  proxy_port:
+    sh:
+      if [[ ! -z $proxy_port ]]
+      ; then
+        echo $proxy_port
+      ; else
+        echo 9000
+      ; fi
+
+  runner:
+    sh:
+      if [[ ! -z $runner ]]
+      ; then
+        echo $runner
+      ; else
+        echo 'gost'
+      ; fi 
+
+  runcmd:
+    sh:
+      if [[ ! -z $runcmd ]]
+      ; then
+        echo $runcmd
+      ; else
+        echo 'podman'
+      ; fi
+
+  runner_option:
+    sh:
+      if [[ ! -z $runner_option ]]
+      ; then
+        echo $runner_option
+      ; else if [[ ! -z $mode && $mode -eq 'dev' ]]
+        ; then
+          echo '--rm'
+        ; else
+          echo '-d --restart always'
+        ; fi
+      ; fi
+
+  auth:
+    sh:
+      if [[ ! -z $auth ]]
+      ; then
+        echo $auth
+      ; else if [[ (! -z $user) && (! -z $pswd) ]]
+        ; then
+          echo "${user}:${pswd}@"
+        ; else
+          echo ''
+        ; fi
+      ; fi
+
+  remote_host:
+    sh:
+      if [[ ! -z $remote_host ]]
+      ; then
+        echo $remote_host
+      ; else
+        echo ''
+      ; fi

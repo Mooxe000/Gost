@@ -1,0 +1,36 @@
+version: '3'
+
+tasks:
+
+  default:
+    cmds:
+      - echo 'Hello World from Task!'
+    silent: true
+
+  server:
+    cmds:
+      - '
+        {{.runner}}
+          -L kcp://{{.kcp_host}}:{{.kcp_port}}/:{{.tcp_port}}
+          -L relay+wss://{{.auth}}:{{.tcp_port}}
+        '
+
+  client_unkcp:
+    cmds:
+      - '
+        {{.runner}}
+          -L tcp://:{{.midforward_port}}
+          -F forward+kcp://{{.remote_host}}:{{.kcp_port}}
+        '
+
+  client_proxy:
+    cmds:
+      - '
+        {{.runner}}
+          -L {{.proxy_host}}:{{.proxy_port}}
+          -F relay+wss://{{.auth}}:{{.midforward_port}}
+        '
+
+  replace_conf:
+    cmds:
+      - "sed -e '/^  {{.key}}*/c\\  {{.key}}: {{.value}}' ./_sample.{{.conf_name}}.vars.yml"
