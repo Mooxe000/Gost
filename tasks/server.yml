@@ -15,13 +15,15 @@ tasks:
 
   fw_conf:
     cmd:
-      - iptables -A INPUT -p tcp
+      - iptables -I INPUT -p tcp
           --dport {{.remote_tcp}} -j ACCEPT
-      - iptables -A INPUT -p tcp
+      - iptables -I INPUT -p tcp
           --dport {{.remote_kcp}} -j ACCEPT
-      - iptables -A INPUT -p udp
+      - iptables -I INPUT -p udp
           --dport {{.remote_kcp}} -j ACCEPT
+
+      # - iptables -L -n --line-numbers
+      # - iptables -D INPUT 1
 
       - iptables-save
       - netfilter-persistent save
-
