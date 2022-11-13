@@ -51,7 +51,7 @@ tasks:
       - rm -rf ./Task
       - mkdir -p ./Task ./bin
       - cd Task
-        ; axel https://download.fastgit.org/go-task/task/releases/download/v3.17.0/task_linux_amd64.tar.gz
+        ; axel https://download.fastgit.org/go-task/task/releases/download/v3.18.0/task_linux_amd64.tar.gz
         ; tar xvf task_linux_amd64.tar.gz
       - mv ./Task/task ./bin
       - rm -rf ./Task
@@ -61,8 +61,8 @@ tasks:
       - rm -rf ./Gost
       - mkdir -p ./Gost ./bin
       - cd Gost
-        ; axel https://download.fastgit.org/go-gost/gost/releases/download/v3.0.0-beta.6/gost-linux-amd64-3.0.0-beta.6.gz
-        ; gzip -d gost-linux-amd64-3.0.0-beta.6.gz
+        ; axel https://download.fastgit.org/go-gost/gost/releases/download/v3.0.0-rc.0/gost-linux-amd64-3.0.0-rc.0.gz
+        ; gzip -d gost-linux-amd64-3.0.0-rc.0.gz
         ; mv gost* gost
         ; chomd +x gost
       - mv ./Gost/gost ./bin

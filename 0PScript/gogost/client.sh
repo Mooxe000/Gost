@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# env runner=podman gost_user=$user gost_pswd=$pswd remote_host=$host_ip ./gogost.sh
+# env runner=podman gost_user=$user gost_pswd=$pswd remote_host=$host_ip ./client.sh
 
 $runner run -d \
   --restart always \

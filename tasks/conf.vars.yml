@@ -43,7 +43,7 @@ vars:
         echo $runner
       ; else
         echo 'gost'
-      ; fi 
+      ; fi
 
   runcmd:
     sh:

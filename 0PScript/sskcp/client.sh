@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# env runner=podman sskcp_host=$host_ip sskcp_pswd=$pswd ./sskcp.sh
+# env runner=podman sskcp_host=$host_ip sskcp_pswd=$pswd ./client.sh
 
 $runner run -d \
   --name sskcp_client \
