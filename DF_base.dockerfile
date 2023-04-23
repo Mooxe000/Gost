@@ -7,7 +7,7 @@ RUN apk add --no-cache axel
 RUN set -eux \
 ; mkdir -p ./Task \
 ; cd Task \
-; axel https://download.fastgit.org/go-task/task/releases/download/v3.17.0/task_linux_amd64.tar.gz \
+; axel https://kgithub.com/go-task/task/releases/download/v3.24.0/task_linux_amd64.tar.gz \
 ; tar xvf task_linux_amd64.tar.gz \
 ; mv task /usr/bin/task \
 ; cd .. \
