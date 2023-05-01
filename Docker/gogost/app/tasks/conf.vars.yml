@@ -86,5 +86,22 @@ vars:
       ; then
         echo $remote_host
       ; else
-        echo ''
+        echo 'localhost'
+      ; fi
+
+  locale_host:
+    sh:
+      if [[ ! -z $locale_host ]]
+      ; then
+        echo $locale_host
+      ; else
+        if [[ -f /sbin/ip ]]
+        ; then
+          ip a
+          | grep 'inet '
+          | grep -v ' lo'
+          | grep -v ' docker'
+          | awk '{print $2}'
+          | sed -e 's/\/24//'
+        ; fi
       ; fi

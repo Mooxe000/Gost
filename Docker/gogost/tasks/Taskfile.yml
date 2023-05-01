@@ -1,0 +1,30 @@
+version: '3'
+
+includes:
+  remote:
+    taskfile: ./remote.yml
+    internal: true
+
+tasks:
+
+  help: task --list-all
+  default:
+    - task: help
+
+  server:
+    - task: remote:server
+
+  client:
+    - task: remote:client
+
+  close_remote:
+    - task: remote:close
+
+  curltest:
+    - task: remote:curltest
+
+  close:
+    - task: remote:close
+
+  curltest:
+    - task: remote:curltest

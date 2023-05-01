@@ -1,0 +1,70 @@
+version: '3'
+
+includes:
+  common: ../app/tasks/common.yml
+  config: ../app/tasks/conf.vars.yml
+
+tasks:
+
+  default:
+    cmds:
+      - echo 'Hello World from Task!'
+    silent: true
+
+  close_server:
+    vars:
+      ins_name: gost_server
+    cmds:
+      - '{{.runcmd}} rm -f {{.ins_name}}'
+
+  close_client:
+    vars:
+      ins_name: gost_client
+    cmds:
+      - '{{.runcmd}} rm -f {{.ins_name}}'
+
+  close:
+    deps:
+      - close_server
+      - close_client
+
+  server:
+    deps:
+      - close_server
+    vars:
+      ins_name: gost_server
+    cmds:
+      - '
+          {{.runcmd}} run
+            {{.runner_option}}
+            --name {{.ins_name}}
+            -p {{.tcp_port}}:{{.tcp_port}}
+            -p {{.kcp_port}}:{{.kcp_port}}/udp
+            mooxe/gogost server
+        '
+
+  client:
+    deps:
+      - close_client
+    vars:
+      ins_name: gost_client
+    cmds:
+      - '
+          {{.runcmd}} run
+            {{.runner_option}}
+            --name {{.ins_name}}
+            -e remote_host=$remote_host
+            -p {{.proxy_port}}:{{.proxy_port}}
+            mooxe/gogost client
+        '
+
+  curltest:
+    env:
+      remote_host: localhost
+    cmds:
+      - task: common:curltest
+        vars:
+          ip_host: cip.cc
+      - task: common:curltest
+        vars:
+          ip_host: ipinfo.io

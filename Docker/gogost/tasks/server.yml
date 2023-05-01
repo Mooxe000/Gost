@@ -2,10 +2,9 @@ version: '3'
 
 tasks:
 
+  help: task --list-all
   default:
-    cmds:
-      - echo 'Hello World from Task!'
-    silent: true
+    - task: help
 
   fw_conf_febore:
     cmd:

@@ -1,0 +1,21 @@
+version: '3'
+
+tasks:
+
+  help: task --list-all
+  default:
+    vars:
+      # https://github.com/go-gost/gost/releases/download/v3.0.0-rc7/gost_3.0.0-rc7_linux_amd64.tar.gz
+      gost_version: 3.0.0-rc7
+      gost_file: gost_{{.gost_version}}_linux_amd64.tar.gz
+      git_host: download.fastgit.org
+      git_repo: go-gost/gost
+      url_fix: releases/download
+      gost_url: https://{{.git_host}}/{{.git_repo}}/{{.url_fix}}/v{{.gost_version}}/{{.gost_file}}
+    cmds:
+      - mkdir ./Gost
+      - cd ./Gost
+        ; axel {{.gost_url}}
+        ; tar xvf {{.gost_file}}
+      - mv ./Gost/gost /usr/local/bin/gost
+      - rm -rf ./Gost Taskfile.yml

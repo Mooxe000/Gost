@@ -1,0 +1,21 @@
+version: '3'
+
+vars:
+  image_name: mooxe/gost
+
+tasks:
+
+  help: task --list-all
+  default:
+    - task: help
+
+  build:
+    - podman build -t
+        {{.image_name}} .
+
+  runti:
+    - podman run --rm -ti
+        {{.image_name}} bash
+
+  push:
+    - podman push {{.image_name}}

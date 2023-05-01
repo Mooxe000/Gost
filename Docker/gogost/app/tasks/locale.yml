@@ -6,10 +6,9 @@ includes:
 
 tasks:
 
+  help: task --list-all
   default:
-    cmds:
-      - echo 'Hello World from Task!'
-    silent: true
+    - task: help
 
   server:
     cmds:
@@ -29,6 +28,9 @@ tasks:
       - client_proxy
 
   curltest:
-    cmds:
-      - curl --proxy http://127.0.0.1:{{.proxy_port}} {{.ip_host}}
-      - curl --proxy socks5://127.0.0.1:{{.proxy_port}} {{.ip_host}}
+    - task: common:curltest
+      vars:
+        ip_host: cip.cc
+    - task: common:curltest
+      vars:
+        ip_host: ipinfo.io

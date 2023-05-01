@@ -2,10 +2,9 @@ version: '3'
 
 tasks:
 
+  help: task --list-all
   default:
-    cmds:
-      - echo 'Hello World from Task!'
-    silent: true
+    - task: help
 
   server:
     cmds:
@@ -30,6 +29,11 @@ tasks:
           -L {{.proxy_host}}:{{.proxy_port}}
           -F relay+wss://{{.auth}}:{{.midforward_port}}
         '
+
+  curltest:
+    cmds:
+      - curl --proxy http://{{.remote_host}}:{{.proxy_port}} {{.ip_host}}
+      - curl --proxy socks5://{{.remote_host}}:{{.proxy_port}} {{.ip_host}}
 
   replace_conf:
     cmds:

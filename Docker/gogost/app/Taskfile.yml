@@ -1,0 +1,32 @@
+version: '3'
+
+includes:
+  locale:
+    taskfile: ./tasks/locale.yml
+    internal: true
+
+tasks:
+
+  help: task --list-all
+  default:
+    - task: help
+
+  server:
+    cmds:
+      - task: locale:server
+
+  client:
+    cmds:
+      - task: locale:client
+
+  install-curl:
+    - if [[ ! -f /usr/bin/curl ]]
+      ; then
+          apk add --no-cache curl
+      ; fi
+
+  curltest:
+    deps:
+      - install-curl
+    cmds:
+      - task: locale:curltest
