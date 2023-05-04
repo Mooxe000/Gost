@@ -1,0 +1,50 @@
+version: '3'
+
+vars:
+  fw_list: '
+      iptables -L -n --line-numbers
+      | grep -E "{{.kcp_port}}|{{.tcp_port}}"
+    '
+
+tasks:
+
+  help: task -t --list-all
+  default:
+    - task: help
+
+  conf-before:
+    - dpkg --configure -a --force-confnew
+    - DEBIAN_FRONTEND=noninteractive apt install -y iptables-persistent
+    - systemctl daemon-reload
+
+  conf:
+    - iptables -I INPUT -p tcp
+        --dport {{.kcp_port}} -j ACCEPT
+    - iptables -I INPUT -p udp
+        --dport {{.tcp_port}} -j ACCEPT
+
+  save:
+    - iptables-save
+    - netfilter-persistent save
+
+  all:
+    deps:
+      - conf-before
+    cmds:
+      - task: conf
+      - task: save
+
+  list:
+    - '{{.fw_list}}'
+
+  remove:
+    cmds:
+      - for id in $(
+          {{.fw_list}}
+          | awk '{print $1}'
+        )
+        ; do
+          iptables -D INPUT $id
+        ; done
+      - task: save
+      - task: list

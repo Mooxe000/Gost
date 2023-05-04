@@ -2,7 +2,7 @@
 
 # env runner=podman sskcp_pswd=$pswd ./sskcp.sh
 
-runner run -d \
+$runner run -d \
   --restart always \
   --name sskcp_server \
   -p 10818:6443 \

@@ -3,6 +3,9 @@ version: '3'
 dotenv:
   - .env
 
+includes:
+  fw: ./fw.yml
+
 tasks:
 
   help: task --list-all
@@ -15,12 +18,12 @@ tasks:
         --name gost_client
         -e user=$gost_user
         -e pswd=$gost_pswd
-        -e kcp_port=14444
-        -e tcp_port=14443
+        -e kcp_port=$kcp_port
+        -e tcp_port=$tcp_port
         -e remote_host=$remote_host
-        -e proxy_port=1080
-        -p 1080:1080
-        mooxe/gogost_client
+        -e proxy_port=$proxy_port
+        -p $proxy_port:$proxy_port
+        mooxe/gogost client
 
   server:
     - $runner run -d
@@ -28,11 +31,11 @@ tasks:
         --name gost_server
         -e user=$gost_user
         -e pswd=$gost_pswd
-        -e kcp_port=14444
-        -e tcp_port=14443
-        -p 14444:14444/udp
-        -p 14443:14443
-        mooxe/gogost_server
+        -e kcp_port=$kcp_port
+        -e tcp_port=$tcp_port
+        -p $kcp_port:$kcp_port/udp
+        -p $tcp_port:$tcp_port
+        mooxe/gogost server
 
   log-client:
     - $runner logs -f gost_client
@@ -45,3 +48,8 @@ tasks:
 
   rm-server:
     - $runner rm -f gost_server
+
+  rm-all:
+    deps:
+      - rm-server
+      - rm-client
