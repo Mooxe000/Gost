@@ -89,19 +89,23 @@ vars:
         echo 'localhost'
       ; fi
 
+  ip_handler: grep 'inet '
+    | grep ' eth0'
+    | awk '{print $2}'
+    | sed -e 's/\/20//'
+
   locale_host:
     sh:
       if [[ ! -z $locale_host ]]
       ; then
         echo $locale_host
       ; else
-        if [[ -f /sbin/ip ]]
+        if [[ $(uname) -eq 'Windows_NT' ]]
         ; then
-          ip a
-          | grep 'inet '
-          | grep -v ' lo'
-          | grep -v ' docker'
-          | awk '{print $2}'
-          | sed -e 's/\/24//'
+            podman machine ssh "ip a"
+            | {{.ip_handler}}
+        ; else
+            ip a
+            | {{.ip_handler}}
         ; fi
       ; fi

@@ -53,7 +53,7 @@ tasks:
           {{.runcmd}} run
             {{.runner_option}}
             --name {{.ins_name}}
-            -e remote_host=$remote_host
+            -e remote_host={{.locale_host}}
             -p {{.proxy_port}}:{{.proxy_port}}
             mooxe/gogost client
         '
