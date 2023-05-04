@@ -39,12 +39,15 @@ tasks:
 
   remove:
     cmds:
-      - for id in $(
+      - for n in $(
           {{.fw_list}}
           | awk '{print $1}'
         )
         ; do
-          iptables -D INPUT $id
+          iptables -D INPUT $(
+            {{.fw_list}}
+            | head -n 1
+            | awk '{print $1}'
+          )
         ; done
-      - task: save
       - task: list
