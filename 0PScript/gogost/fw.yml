@@ -18,9 +18,9 @@ tasks:
     - systemctl daemon-reload
 
   conf:
-    - iptables -I INPUT -p tcp
-        --dport {{.kcp_port}} -j ACCEPT
     - iptables -I INPUT -p udp
+        --dport {{.kcp_port}} -j ACCEPT
+    - iptables -I INPUT -p tcp
         --dport {{.tcp_port}} -j ACCEPT
 
   save:
