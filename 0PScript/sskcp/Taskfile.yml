@@ -1,0 +1,72 @@
+version: '3'
+
+dotenv:
+  - .env
+
+# includes:
+#   fw: ./fw.yml
+
+tasks:
+
+  help: task --list-all
+  default:
+    - task: help
+
+  server:
+    - $runner run -d
+        --restart always
+        --name sskcp_server
+        -p $tcp_port:6443
+        -p $kcp_port:6500/udp
+          mritd/shadowsocks
+            -m "ss-server"
+            -s "
+              -s 0.0.0.0
+              -p 6443
+              -m chacha20-ietf-poly1305
+              -k $sskcp_pswd
+              "
+            -x
+            -e "kcpserver"
+            -k "
+              -t 127.0.0.1:6443
+              -l :6500
+              -mode fast2"
+
+  client:
+    - $runner run -d
+        --name sskcp_client
+        --restart=always
+        -p $proxy_port:1080
+        mritd/shadowsocks
+          -m "ss-local"
+          -s "
+            -s 127.0.0.1
+            -p 6500
+            -b 0.0.0.0
+            -l 1080
+            -m chacha20-ietf-poly1305
+            -k $sskcp_pswd
+            "
+          -x -e "kcpclient"
+          -k "
+            -r ${remote_host}:${kcp_port}
+            -l :6500
+            -mode fast2"
+
+  log-client:
+    - $runner logs -f sskcp_client
+
+  log-server:
+    - $runner logs -f sskcp_server
+
+  rm-client:
+    - $runner rm -f sskcp_client
+
+  rm-server:
+    - $runner rm -f sskcp_server
+
+  rm-all:
+    deps:
+      - rm-server
+      - rm-client
